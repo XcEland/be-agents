@@ -65,6 +65,9 @@ app.include_router(chat.router)
 import agent_driven_chat  # local module - must be after shared resources above
 app.include_router(agent_driven_chat.router)
 
+import tool_calling
+app.include_router(tool_calling.router)
+
 # ---------- Startup event: start cleanup task if configured ----------
 @app.on_event("startup")
 async def startup_event():
