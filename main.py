@@ -1,4 +1,3 @@
-# app/main.py
 import os
 from dotenv import load_dotenv
 import asyncio
@@ -30,7 +29,7 @@ client = APIClient(credentials)
 
 # NOTE: parameter name used by this code
 model_params = {
-    "time_limit": 1000,
+    "time_limit": 10000,
     "max_new_tokens": 300
 }
 
@@ -58,14 +57,18 @@ conv_lock = Lock()  # thread-safe access for the dict
 CONV_TTL_SECONDS = int(os.getenv("CONV_TTL_SECONDS", 60 * 60 * 24 * 7))  # default 7 days
 MAX_HISTORY_MESSAGES = int(os.getenv("MAX_HISTORY_MESSAGES", 200))
 
-# ---------- Include chat router (import after shared resources exist) ----------
-# chat.py will import this module (main) to access the shared resources
-import chat  # local module - must be after definitions above
+# ---------- Include chat and agent routers (import after shared resources exist) ----------
+# chat.py and agent_driven_chat.py import this module (main) to access the shared resources
+import chat  # local module - must be after shared resources above
 app.include_router(chat.router)
+
+import agent_driven_chat  # local module - must be after shared resources above
+app.include_router(agent_driven_chat.router)
 
 # ---------- Startup event: start cleanup task if configured ----------
 @app.on_event("startup")
 async def startup_event():
+    # start background cleanup task only if TTL configured
     if CONV_TTL_SECONDS > 0:
         # chat.cleanup_expired_conversations_task is an async coroutine function
         # it references conversations and conv_lock which are defined above
