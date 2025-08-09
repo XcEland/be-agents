@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+ibm-watsonx-ai
+python-dotenv
+pydantic
+python-multipart
