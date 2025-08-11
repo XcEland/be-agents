@@ -71,6 +71,9 @@ app.include_router(tool_calling.router)
 import text_generation  # new module
 app.include_router(text_generation.router)
 
+import generation  # new module
+app.include_router(generation.router)
+
 # ---------- Startup event: start cleanup task if configured ----------
 @app.on_event("startup")
 async def startup_event():
